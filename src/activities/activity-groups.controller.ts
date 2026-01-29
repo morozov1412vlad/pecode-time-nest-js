@@ -9,11 +9,10 @@ import {
   Delete,
   Inject,
 } from '@nestjs/common';
-import { Serialize } from 'src/lib/interceptors';
+import { Serialize, SerializeList } from 'src/lib/interceptors';
 import { ActivityGroupResponse, ActivityGroupPayload } from './dtos';
 import { IdParam, PaginationQuery } from 'src/lib/dtos';
 import { ActivityGroupsService } from './services';
-import { SerializeList } from 'src/lib/interceptors/serialize-list.interceptor';
 
 @Controller('activity-groups')
 export class ActivityGroupsController {
