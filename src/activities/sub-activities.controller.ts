@@ -7,6 +7,7 @@ import {
   Patch,
   Query,
   Delete,
+  Inject,
 } from '@nestjs/common';
 import { Serialize } from 'src/lib/interceptors';
 import {
@@ -15,48 +16,45 @@ import {
   SubActivityUpdatePayload,
   SubActivityQuery,
 } from './dtos';
-import { IdParam, ListResponse, PaginationQuery } from 'src/lib/dtos';
-
-const HARDCODED_SUB_ACTIVITY: SubActivityResponse = {
-  id: 1,
-  name: 'NestJS learning',
-  activity_id: 1,
-};
+import { IdParam, PaginationQuery } from 'src/lib/dtos';
+import { SubActivitiesService } from './services';
+import { SerializeList } from 'src/lib/interceptors/serialize-list.interceptor';
 
 @Controller('sub-activities')
 export class SubActivitiesController {
+  constructor(
+    @Inject(SubActivitiesService) private service: SubActivitiesService,
+  ) {}
+
   @Post('/')
   @Serialize(SubActivityResponse)
   create(@Body() payload: SubActivityPayload) {
-    return HARDCODED_SUB_ACTIVITY;
+    return this.service.create(payload);
   }
 
   @Get('/:id')
   @Serialize(SubActivityResponse)
   getById(@Param() { id }: IdParam) {
-    return HARDCODED_SUB_ACTIVITY;
+    return this.service.getById(id);
   }
 
   @Patch('/:id')
   @Serialize(SubActivityResponse)
   update(@Param() { id }: IdParam, @Body() payload: SubActivityUpdatePayload) {
-    return HARDCODED_SUB_ACTIVITY;
+    return this.service.update(id, payload);
   }
 
   @Get('/')
-  @Serialize(ListResponse(SubActivityResponse))
+  @SerializeList(SubActivityResponse)
   list(
     @Query() { activity_id }: SubActivityQuery,
     @Query() pagination: PaginationQuery,
   ) {
-    return {
-      next: null,
-      previous: null,
-      count: 1,
-      results: [HARDCODED_SUB_ACTIVITY],
-    };
+    return this.service.list(pagination, activity_id);
   }
 
   @Delete('/:id')
-  deleteById(@Param() { id }: IdParam) {}
+  deleteById(@Param() { id }: IdParam) {
+    return this.service.deleteById(id);
+  }
 }
